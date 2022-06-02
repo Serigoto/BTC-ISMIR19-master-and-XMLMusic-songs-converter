@@ -1,6 +1,6 @@
-# A Bi-Directional Transformer for Musical Chord Recognition
+# A Bi-Directional Transformer for Musical Chord Recognition and XMLMusicConverter.
 
-This repository has the source codes for the paper "A Bi-Directional Transformer for Musical Chord Recognition"(ISMIR19).
+This repository has the source codes for the paper "A Bi-Directional Transformer for Musical Chord Recognition"(ISMIR19) and the source codes for the paper "XMLMusicConverter".
 
 <img src="png/model.png">
 
@@ -13,6 +13,7 @@ This repository has the source codes for the paper "A Bi-Directional Transformer
 - pyyaml >= 3.13
 - mir_eval >= 0.5
 - pretty_midi >= 0.2.8
+- pycopy-xml.etree.ElementTree >= 0.2.1
 
 ## File descriptions
   * `audio_dataset.py` : loads data and preprocesses label files to chord labels and mp3 files to constant-q transformation. 
@@ -23,6 +24,7 @@ This repository has the source codes for the paper "A Bi-Directional Transformer
   * `train_crf.py` : for training CRFs.  
   * `run_config.yaml` : includes hyper parameters and paths that are needed.
   * `test.py` : for recognizing chord from audio file. 
+  * `script.py` : for running the XMLMusicConverter script.
 
 ## Using BTC : Recognizing chords from files in audio directory
 
@@ -37,6 +39,14 @@ $ python test.py --audio_dir audio_folder --save_dir save_folder --voca False
 The resulting files are lab files of the form shown below and midi files.
 
   <img src="png/example.png">
+  
+### Using MusicXMLConverter from command line
+```bash
+$ python script.py --audio_dir audio_dir --bpm bpm --min_chord_duration min_chord_duration
+``
+  * audio_dir : a folder of audio files for chord recognition (default: './test')
+  * bpm : the bpm of the song (default: 90)
+  * min_chor_duration : BTC is not a perfect chord recognizer and some chords are residuals and this parameters is for remove all those chords that last less than the parameter min_chor_duration (default: 0.6)
 
 ## Attention Map
 The figures represent the probability values of the attention of self-attention layers 1, 3, 5 and 8 respectively. The
