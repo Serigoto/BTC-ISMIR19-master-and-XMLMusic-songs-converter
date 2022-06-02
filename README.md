@@ -43,7 +43,7 @@ The resulting files are lab files of the form shown below and midi files.
 ### Using MusicXMLConverter from command line
 ```bash
 $ python script.py --audio_dir audio_dir --bpm bpm --min_chord_duration min_chord_duration
-``
+```
   * audio_dir : a folder of audio files for chord recognition (default: './test')
   * bpm : the bpm of the song (default: 90)
   * min_chor_duration : BTC is not a perfect chord recognizer and some chords are residuals and this parameters is for remove all those chords that last less than the parameter min_chor_duration (default: 0.6)
