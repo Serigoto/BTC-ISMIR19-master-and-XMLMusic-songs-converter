@@ -2,6 +2,7 @@
 
 This repository has the source codes for the paper "A Bi-Directional Transformer for Musical Chord Recognition"(ISMIR19) and the source codes for the paper "XMLMusicConverter".
 
+BTC:
 <img src="png/model.png">
 
 ## Requirements
