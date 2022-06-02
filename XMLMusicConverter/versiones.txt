@@ -1,0 +1,2 @@
+scriptV1------> Detecta bucles pero sin importar donde estén ubicados en el pentagrama
+scriptV2------> Detecta bucles teniendo en cuenta la ubicaciones del primer y último acorde en el pentagrama.
