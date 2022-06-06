@@ -12,7 +12,7 @@ import math
 from datetime import date
 from torch import long
 
-def eliminacion_solapamientos(valido):
+def overlap_removal(valido):
     inicios = valido[0]
     repeticiones = valido[1]
     longitud = valido[2]
@@ -20,9 +20,6 @@ def eliminacion_solapamientos(valido):
     inicios = [int(x) for x in inicios]
     repeticiones = [int(x) for x in repeticiones]
     longitud = int(longitud)
-
-    finalInicios = inicios
-    finalRepeticiones = repeticiones
 
     for i in range(0, len(inicios)):
         limite = inicios[i]+longitud*repeticiones[i]
@@ -81,7 +78,7 @@ def get_string_chords(): #lee la cadena de toda la cancion
     file.close()
     return cadena
 
-def eliminar_bucles (resul):
+def loop_removal (resul):
     inicios = resul[0]
     repeticiones = resul[1]
     longitud = resul[2]
@@ -125,7 +122,7 @@ def eliminar_bucles (resul):
     
     file = open('./XMLMusicConverter/Transicion/labtipoxml.lab', 'r')
 
-def tratamiento_resul (resul):
+def real_loop_detector (resul):
     cadena = resul[0]
     inicios = resul[1]
     longitud = resul[2]
@@ -152,9 +149,9 @@ def loop_election():
         if len(i[0]) > 2:   #Eliminalos loops con solo un acorde
             resul = loop_validation(i[0]) #Loops exactos (empiezan con el compás vacío y terminan completando el compás)
             if resul[1]:    #Si existe esa cadena de forma 'exacta'
-                valido = tratamiento_resul(resul) #Comprueba si esa cadena se encuentra seguida por lo menos 2 veces
+                valido = real_loop_detector(resul) #Comprueba si esa cadena se encuentra seguida por lo menos 2 veces
                 if valido[0]: #Si ha encontrado alguna cadena seguida almenos una vez    valido = lista, repeticiones, longitud
-                    eliminar_bucles(eliminacion_solapamientos(valido)) #Elimina el bucle
+                    loop_removal(overlap_removal(valido)) #Elimina el bucle
 
 def loop_validation(cadena):
     aux = cadena.replace(':min','')
@@ -296,6 +293,7 @@ def generate_XML(fileName, bpm, nombre):  #Lee el fichero de acordes tratado y c
     file = open('./XMLMusicConverter/Transicion/labtipoxml.lab', 'r')
     lines = file.readlines()
     cont = 0
+    nota = ''
     for index2, line1 in enumerate(lines):
         alteracion = 0
         tonalidad = 'major'
@@ -310,6 +308,12 @@ def generate_XML(fileName, bpm, nombre):  #Lee el fichero de acordes tratado y c
         if '#' in aux[2]:
             aux[2] = aux[2].replace('#','')
             alteracion = 1
+        if aux[4] == '3072':
+            nota = 'whole'
+        elif aux[4] == '1536':
+            nota = 'half'
+        elif aux[4] == '768':
+            nota = 'quarter'
 
         if aux[2] != 'N':
             if duracion < 3072:
@@ -339,6 +343,11 @@ def generate_XML(fileName, bpm, nombre):  #Lee el fichero de acordes tratado y c
                 step = xml.SubElement(pitch, 'step').text = 'B'
                 octave = xml.SubElement(pitch, 'octave').text = '4'
                 duration = xml.SubElement(note, 'duration').text = aux[4]
+                if aux[4] == '2304':
+                    type2 = xml.SubElement(note, 'type').text = 'half'
+                    dot = xml.SubElement(note,'dot')
+                else:
+                    type2 = xml.SubElement(note, 'type').text = nota
             else:
                 contMeasure += 1
                 duracion -=3072
@@ -369,6 +378,11 @@ def generate_XML(fileName, bpm, nombre):  #Lee el fichero de acordes tratado y c
                 step = xml.SubElement(pitch, 'step').text = 'B'
                 octave = xml.SubElement(pitch, 'octave').text = '4'
                 duration = xml.SubElement(note, 'duration').text = aux[4]
+                if aux[4] == '2304':
+                    type2 = xml.SubElement(note, 'type').text = 'half'
+                    dot = xml.SubElement(note,'dot')
+                else:
+                    type2 = xml.SubElement(note, 'type').text = nota
                 
 
     barline = xml.SubElement(measure, 'barline', location = 'right')
@@ -389,7 +403,7 @@ def song_name(ruta):
     cancion = audio[-1].split('.')
     return cancion[0]
 
-def creacion_fichero_tipo_XML():
+def xml_type_generator():
     file = open('./XMLMusicConverter/Transicion/exampleCompleto.lab', 'r')
     fileResult = open('./XMLMusicConverter/Transicion/labtipoxml.lab','w')
     lines = file.readlines()
@@ -428,7 +442,7 @@ def main ():
     nombre = song_name(args.audio_dir)
     initial_file_reading(args.bpm, args.min_chord_duration, nombre)
     file_processing()
-    creacion_fichero_tipo_XML()
+    xml_type_generator()
     loop_election()
     generate_XML('./XMLMusicConverter/MuseScore/'+nombre+'.xml',args.bpm,nombre)
 
